@@ -2,7 +2,7 @@
 
 ---
 
-Important note: This is a highly experimental PoC.
+Important note: At the current time, this is a highly experimental PoC.
 
 **Impetus:** At the moment, the setup process for dev machines at Vortexa mostly manual. New joiners must follow an assortment of Notion pages step-by-step. This has some cons:
 * Slow
