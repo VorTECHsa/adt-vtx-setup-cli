@@ -28,6 +28,10 @@ Important note: At the current time, this is a highly experimental PoC.
 * Current choice of golang is suboptimal for ADT (consider Rust?)
 ---
 
+<div align="center">
+  <img width="400" alt="Screenshot 2023-05-26 at 14 33 50" src="https://github.com/VorTECHsa/adt-vtx-setup-cli/assets/10605534/12569887-9b38-467c-b6d0-39fa9cd09d61">
+ </div>
+
 # Prerequisites
 
 * [Go](https://go.dev/dl/)
