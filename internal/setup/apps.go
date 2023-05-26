@@ -21,7 +21,11 @@ var HOMEBREW_APPS = []string{
 	"visual-studio-code",
 	"obs",
 	"stats",
+	"sops",
 }
+
+// TODO: This is workaround-ish. Should improve how homebrew apps are declared.
+var CASKLESS_HOMEBREW_APPS = []string{"sops"}
 
 // From https://github.com/nvm-sh/nvm
 var NVM_INSTALL_CMD = []string{ "curl", "-o-", "https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash" }
@@ -52,9 +56,23 @@ func installHomebrew(dryRun bool) error {
 	}
 }
 
+func isAppCaskless(appName string) bool {
+	for _, v := range CASKLESS_HOMEBREW_APPS {
+			if appName == v {
+					return true
+			}
+	}
+	return false
+}
+
 func installHomebrewApp(appName string, dryRun bool) error {
 	logging.LogStep(appName)
-	cmdArgs := []string{ "brew", "install", "--cask", appName }
+	cmdArgs := []string{ "brew", "install" }
+	if !isAppCaskless(appName) {
+		cmdArgs = append(cmdArgs, "--cask")
+	}
+
+	cmdArgs = append(cmdArgs, appName)
 	if dryRun {
 		fmt.Println("[dry-run] " + strings.Join(cmdArgs, " "))
 		return nil

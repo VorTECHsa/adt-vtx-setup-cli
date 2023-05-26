@@ -18,8 +18,9 @@ func ensureWorkspaceDirExists(workspaceDir string) error {
 }
 
 func Action(cCtx *cli.Context) error {
+	// TODO: Make configurable and merge into one "config" object
 	workspaceDir := util.CreatePathFromHomeDir("workspace")
-	dryRun := true
+	dryRun := false
 
 	err := ensureWorkspaceDirExists(workspaceDir)
 	if err != nil {
