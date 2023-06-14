@@ -2,9 +2,9 @@
 
 ---
 
-Important note: At the current time, this is a highly experimental PoC.
+Important note: This is a highly experimental PoC.
 
-**Impetus:** At the moment, the setup process for dev machines at Vortexa is mostly manual. New joiners must follow an assortment of Notion pages step-by-step. This has some cons:
+**Impetus:** At the moment, the setup process for dev machines at Vortexa mostly manual. New joiners must follow an assortment of Notion pages step-by-step. This has some cons:
 * Slow
 * Error-prone
 * Often requires pod lead or team hand-holding at some point
@@ -22,52 +22,24 @@ Important note: At the current time, this is a highly experimental PoC.
 
 **Potential Challenges/Cons:**
 
-* Maintenance burden of an operational package
+* Maintenance burden
 * Scope creep to do more and more setup tasks
 * Original underlying manual process(es) are forgotten since a tool now automates it
-* Current choice of golang is suboptimal for ADT (consider Rust?)
 ---
-
-<div align="center">
-  <img width="400" alt="Screenshot 2023-05-26 at 14 33 50" src="https://github.com/VorTECHsa/adt-vtx-setup-cli/assets/10605534/12569887-9b38-467c-b6d0-39fa9cd09d61">
- </div>
-
-# Prerequisites
-
-* [Go](https://go.dev/dl/)
-* Add the following to your `~/.zprofile` file:
-  ```bash
-  # -- Go
-  export GOPATH=$HOME/go
-  export PATH=$PATH:$GOROOT/bin:$GOPATH/bin
-  ```
-
-## Building
-
-### Development
-
-```
-sh scripts/build-dev.sh
-```
-
-### Production
-
-```
-sh scripts/build.sh
-```
-
 ## Running
 
-The `setup` command can be built and ran as follows:
+To run the setup script (with the "adt" workflow):
 
 ```bash
-sh run-setup-dev.sh
+sh setup.sh adt
+```
+
+To see usage:
+
+```
+sh setup.sh --help
 ```
 
 ## Development
 
-The project's structure and build scripts are mostly based off of three sources:
-
-* [project-layout](https://github.com/golang-standards/project-layout)
-* [terraform](https://github.com/hashicorp/terraform)
-* [velero](https://github.com/vmware-tanzu/velero)
+TODO
