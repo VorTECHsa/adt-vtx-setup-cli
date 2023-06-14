@@ -29,8 +29,7 @@ alias gl='git pull'"
 SUPPORTED_WORKFLOWS=("adt")
 ADT_WORKFLOW_REPOS=("web" "api" "app-core" "adt-publish-workers")
 
-# ---
-
+# Concatenates the given `strings` list into a comma-seperated list string.
 concatenate_strings() {
   local strings=("$@")  # Store the input strings in an array
   local result=""
@@ -38,13 +37,14 @@ concatenate_strings() {
   for ((i=0; i<${#strings[@]}; i++)); do
     result+="${strings[i]}"
     if (( i < ${#strings[@]}-1 )); then
-      result+=","
+      result+=", "
     fi
   done
 
   echo "$result"
 }
 
+# Returns 1 if the given `value` is in the given `values` list, 0 otherwise.
 check_value_in_list() {
   local value="$1"
   shift
@@ -59,6 +59,7 @@ check_value_in_list() {
   return 0
 }
 
+# Ensures that the given `dir` exists, using `friendly_name` as a friendly descriptor.
 ensure_dir_exists() {
   local dir="$1"
   local friendly_name="$2"
@@ -72,7 +73,7 @@ ensure_dir_exists() {
   fi
 }
 
-# Ensures that the given `file` exists and contains the given `text`, using the given `token` as a test
+# Ensures that the given `file` exists and contains the given `text`, using the given `token` as a test.
 add_text_if_not_exists() {
   local file="$1"
   local text="$2"
@@ -97,6 +98,7 @@ add_text_if_not_exists() {
   fi
 }
 
+# Clones the given `repo` from VorTECHsa GitHub (for the CWD).
 clone_repo_if_not_exists() {
   local repo="$1"
 
@@ -109,6 +111,7 @@ clone_repo_if_not_exists() {
   fi
 }
 
+# Clones the given `repos` list from VorTECHsa GitHub (for the CWD).
 clone_repos_if_not_exists() {
   local repo_names=("$@")
 
@@ -117,6 +120,7 @@ clone_repos_if_not_exists() {
   done
 }
 
+# Installs the given Homebrew package (non-cask), if it hasn't already been installed.
 install_homebrew_package() {
   local package="$1"
   
@@ -128,6 +132,7 @@ install_homebrew_package() {
   fi
 }
 
+# Installs the given Homebrew package (cask), if it hasn't already been installed.
 install_homebrew_cask_package() {
   local package="$1"
   
@@ -223,11 +228,13 @@ else
   # From https://brew.sh/
   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
   
+  # Finalize Homebrew installation (this is what the install.sh script tells us to do)
   echo "--> Running \"Next Steps\" to finalize installation."
   (echo; echo 'eval "$(/opt/homebrew/bin/brew shellenv)"') >> "$HOME/.zprofile"
   eval "$(/opt/homebrew/bin/brew shellenv)"
   source ~/.zprofile
 
+  # Check that the `brew` command is available and gives us a Homebrew version with the -v arg.
   echo "--> Checking if Homebrew was installed successfully."
   brew -v
   if [ $? -eq 0 ]; then
