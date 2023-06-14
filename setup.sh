@@ -59,6 +59,19 @@ check_value_in_list() {
   return 0
 }
 
+ensure_dir_exists() {
+  local dir="$1"
+  local friendly_name="$2"
+
+  echo "\n==> Ensuring $friendly_name dir $dir exists."
+  if [ ! -d "$dir" ]; then
+    echo "--> $friendly_name dir $dir does not exist; creating."
+    mkdir -p "$dir"
+  else
+    echo "[i] $friendly_name dir $ADT_REPOS_DIR already exists; skipping."
+  fi
+}
+
 # Ensures that the given `file` exists and contains the given `text`, using the given `token` as a test
 add_text_if_not_exists() {
   local file="$1"
@@ -155,14 +168,8 @@ if [ $? -eq 0 ]; then
   exit 1
 fi
 
-# Create repos dir if it doesn't exist
-echo "\n==> Ensuring repos dir $REPOS_DIR exists."
-if [ ! -d "$REPOS_DIR" ]; then
-  echo "--> Repos dir $REPOS_DIR does not exist; creating."
-  mkdir -p "$REPOS_DIR"
-else
-  echo "[i] Repos dir $REPOS_DIR already exists; skipping."
-fi
+# Create top-level repos dir if it doesn't exist
+ensure_dir_exists "$REPOS_DIR" "Top-level repos"
 
 # Create a new ed25519 ssh key if it hasn't already been created
 echo "\n==> Ensuring ssh key "$SSH_KEY_FILE" exists."
@@ -193,19 +200,13 @@ if [[ $input == "" ]]; then
   echo "[i] Once you have completed this, please press 'Enter' to continue..."
   read
 else
-  echo "Skipping..."
+  echo "[i] Skipping..."
 fi
 
 # If ADT workflow, clone ADT workflow repositories
 if [ $WORKFLOW == "adt" ]; then
   # Create ADT repos dir if it doesn't exist
-  echo "\n==> Ensuring ADT repos dir $ADT_REPOS_DIR exists."
-  if [ ! -d "$ADT_REPOS_DIR" ]; then
-    echo "--> ADT repos dir $ADT_REPOS_DIR does not exist; creating."
-    mkdir -p "$ADT_REPOS_DIR"
-  else
-    echo "[i] ADT repos dir $ADT_REPOS_DIR already exists; skipping."
-  fi
+  ensure_dir_exists "$ADT_REPOS_DIR" "ADT repos"
 
   # Clone ADT repos if they haven't been cloned already
   echo "\n==> [adt workflow] Ensuring ADT repositories are cloned."
@@ -249,7 +250,7 @@ install_homebrew_cask_package "google-chrome"
 install_homebrew_package "awscli"
 install_homebrew_package "sops"
 
-# Add aliases to 
+# Add aliases to .zprofile
 echo "\n==> Ensuring .zprofile has aliases."
 add_text_if_not_exists "$HOME/.zprofile" "$ALIASES" "$ADDED_BY_US_TOKEN"
 echo "--> Sourcing .zprofile file."

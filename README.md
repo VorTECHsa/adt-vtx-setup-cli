@@ -25,8 +25,20 @@ Important note: This is a highly experimental PoC.
 * Maintenance burden
 * Scope creep to do more and more setup tasks
 * Original underlying manual process(es) are forgotten since a tool now automates it
+
 ---
-## Running
+
+## Usage
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/VorTECHsa/adt-vtx-setup-cli/main/setup.sh -o setup.sh && sh setup.sh adt
+```
+
+**Note:** The above is for the default (ADT) workflow. To see what other workflows are available, run `sh setup.sh --help`
+
+## Development
+
+### Running Locally
 
 To run the setup script (with the "adt" workflow):
 
@@ -39,7 +51,3 @@ To see usage:
 ```
 sh setup.sh --help
 ```
-
-## Development
-
-TODO
