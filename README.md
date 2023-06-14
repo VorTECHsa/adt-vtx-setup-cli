@@ -1,8 +1,43 @@
 # vtx-setup-cli
 
+This is a tool that automates the setup of a typical engineer's MacOS machine at Vortexa.
+
+See the **What & Why** section at the bottom of this document for more information.
+
+## Usage
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/VorTECHsa/adt-vtx-setup-cli/main/setup.sh -o setup.sh && sh setup.sh adt
+```
+
+This does the following:
+* Creates SSH setup for working with our GitHub.
+* Clones common code repositories from our GitHub (depending on the selected `workflow`).
+* Installs common useful apps (e.g. Visual Studio Code, Insomnia, etc.).
+* Creates some useful bash aliases (e.g. `gco` for `git checkout`, etc.).
+* More are planned.
+
+**Note:** The above is for the default (ADT) workflow. To see what other workflows are available, run `sh setup.sh --help`
+
+## Development
+
+### Running Locally
+
+To run the setup script (with the "adt" workflow):
+
+```bash
+sh setup.sh adt
+```
+
+To see usage:
+
+```
+sh setup.sh --help
+```
+
 ---
 
-Important note: This is a highly experimental PoC.
+This is a work-in-progress proof-of-concept tool.
 
 **Impetus:** At the moment, the setup process for dev machines at Vortexa mostly manual. New joiners must follow an assortment of Notion pages step-by-step. This has some cons:
 * Slow
@@ -25,29 +60,3 @@ Important note: This is a highly experimental PoC.
 * Maintenance burden
 * Scope creep to do more and more setup tasks
 * Original underlying manual process(es) are forgotten since a tool now automates it
-
----
-
-## Usage
-
-```bash
-curl -fsSL https://raw.githubusercontent.com/VorTECHsa/adt-vtx-setup-cli/main/setup.sh -o setup.sh && sh setup.sh adt
-```
-
-**Note:** The above is for the default (ADT) workflow. To see what other workflows are available, run `sh setup.sh --help`
-
-## Development
-
-### Running Locally
-
-To run the setup script (with the "adt" workflow):
-
-```bash
-sh setup.sh adt
-```
-
-To see usage:
-
-```
-sh setup.sh --help
-```
