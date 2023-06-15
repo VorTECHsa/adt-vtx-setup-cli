@@ -1,16 +1,31 @@
 #!/usr/bin/env bash
 
+# ==========================================================
+# == Args & Constants                                     ==
+# ==========================================================
+
 # -- Args
 WORKFLOW=$1
 
 # -- Constants
 REPOS_DIR="$HOME/workspace"
-ADT_REPOS_DIR="$REPOS_DIR/adt"
 SSH_DIR="$HOME/.ssh"
 SSH_KEY_FILE="$SSH_DIR/id_ed25519"
 GITHUB_REPOS_SSH_PREFIX="git@github.com:VorTECHsa"
+# Token that is used as a prefix for any content added to any files
+# such as .zprofile, such that we know if we should add content to them.
+# This keeps the script idempotent (re-runnable without bad affects).
 ADDED_BY_US_TOKEN="# -- Added by vcli"
-ALIASES="# General Conveniences
+
+# ==========================================================
+# == General configuration (for all workflows)            ==
+# ==========================================================
+
+# General Homebrew apps to install for any workflow
+GENERAL_HOMEBREW_CASK_APPS=("visual-studio-code" "insomnia" "cyberduck" "google-chrome")
+GENERAL_HOMEBREW_NON_CASK_APPS=("awscli" "sops")
+
+GENERAL_ALIASES="# General Conveniences
 alias c='clear'
 alias cls='clear'
 
@@ -26,8 +41,22 @@ alias gf='git fetch'
 alias gp='git push'
 alias gl='git pull'"
 
+# ==========================================================
+# == Workflow-specific configuration                      ==
+# ==========================================================
+# The supported workflows. Add to this when more workflows are desired.
 SUPPORTED_WORKFLOWS=("adt")
+
+# --------------------------------------
+# -- ADT workflow configuration       --
+# --------------------------------------
+ADT_REPOS_DIR="$REPOS_DIR/adt"
 ADT_WORKFLOW_REPOS=("web" "api" "app-core" "adt-publish-workers")
+ADT_WORKFLOW_HOMEBREW_CASK_APPS=("obs" "hex-fiend" "pgadmin4")
+
+# ==========================================================
+# == Functions                                            ==
+# ==========================================================
 
 # Concatenates the given `strings` list into a comma-seperated list string.
 concatenate_strings() {
@@ -120,18 +149,6 @@ clone_repos_if_not_exists() {
   done
 }
 
-# Installs the given Homebrew package (non-cask), if it hasn't already been installed.
-install_homebrew_package() {
-  local package="$1"
-  
-  if brew list "$package" >/dev/null 2>&1; then
-    echo "--> App '$package' is already installed; skipping."
-  else
-    echo "--> App '$package' is not installed; installing."
-    brew install "$package"
-  fi
-}
-
 # Installs the given Homebrew package (cask), if it hasn't already been installed.
 install_homebrew_cask_package() {
   local package="$1"
@@ -140,16 +157,54 @@ install_homebrew_cask_package() {
     echo "--> App '$package' is already installed; skipping."
   else
     echo "--> App '$package' is not installed; installing."
-    brew install --cask "$package"
+    if [ "$DISABLE_LONG_RUNNERS" != "1" ]; then
+      brew install --cask "$package"
+    else
+      echo "[i] DISABLE_LONG_RUNNERS is set. Skipping installation of $package"
+    fi
   fi
 }
 
+# Installs the given Homebrew package (non-cask), if it hasn't already been installed.
+install_homebrew_non_cask_package() {
+  local package="$1"
+  
+  if brew list "$package" >/dev/null 2>&1; then
+    echo "--> App '$package' is already installed; skipping."
+  else
+    echo "--> App '$package' is not installed; installing."
+    if [ "$DISABLE_LONG_RUNNERS" != "1" ]; then
+      brew install "$package"
+    else
+      echo "[i] DISABLE_LONG_RUNNERS is set. Skipping installation of $package"
+    fi
+  fi
+}
+
+install_homebrew_non_cask_packages() {
+  local packages=("$@")
+  for package in "${packages[@]}"; do
+    install_homebrew_non_cask_package "$package"
+  done
+}
+
+install_homebrew_cask_packages() {
+  local packages=("$@")
+  for package in "${packages[@]}"; do
+    install_homebrew_cask_package "$package"
+  done
+}
+
+# ==========================================================
+# == CLI functionality (arg validation, help page, etc.)  ==
+# ==========================================================
+
 supported_workflows_str=$(concatenate_strings "${SUPPORTED_WORKFLOWS[@]}")
-USAGE="Usage: sh bash-poc.sh <workflow>
+USAGE="Usage: sh setup.sh <workflow>
 
-<workflow> - The desired workflow to enable. Possible values: $supported_workflows_str
+<workflow> - Optional workflow to enable. Possible values: $supported_workflows_str
 
-sh bash-poc.sh --help - show this usage help text"
+sh setup.sh --help - show this usage help text"
 
 # Print help screen and exit if first param is "help"-like
 if [ "$1" == "--help" ] || [ "$1" == "-h" ] || [ "$1" == "help" ] || [ "$1" == "h" ]; then
@@ -157,24 +212,31 @@ if [ "$1" == "--help" ] || [ "$1" == "-h" ] || [ "$1" == "help" ] || [ "$1" == "
   exit 0
 fi
 
-# Ensure that workflow arg has been supplied
-if [ -z "$1" ]; then
-  echo "Error: <workflow> argument has not been supplied.\n"
-  echo "$USAGE"
-  echo "Exiting."
-  exit 1
+# If the workflow arg has been supplied, then check it's validity
+if [ ! -z "$1" ]; then
+  check_value_in_list "$1" "${SUPPORTED_WORKFLOWS[@]}"
+  if [ $? -eq 0 ]; then
+    echo "Error: Workflow '$1' is not supported. It must be one of: $supported_workflows_str\n"
+    echo "$USAGE"
+    exit 1
+  fi
+else
+  echo "WARN: <workflow> argument has not been supplied. This means a general-only setup will be performed."
+  echo "      Run with '--help' for more information"
+  echo
+  echo "      If this is okay, press 'Enter' to proceed, or any other character to abort."
+  read -n 1 input
+  if [[ $input != "" ]]; then
+    echo "Exiting."
+    exit 0
+  else
+    echo "[i] Proceeding."
+  fi
 fi
 
-# Ensure that workflow arg is one of the supported values
-check_value_in_list "$1" "${SUPPORTED_WORKFLOWS[@]}"
-if [ $? -eq 0 ]; then
-  echo "Error: Workflow '$1' is not supported. It must be one of: $supported_workflows_str\n"
-  echo "$USAGE"
-  exit 1
-fi
-
-# Create top-level repos dir if it doesn't exist
-ensure_dir_exists "$REPOS_DIR" "Top-level repos"
+# ==========================================================
+# == SSH key setup and GitHub SSH configuration           ==
+# ==========================================================
 
 # Create a new ed25519 ssh key if it hasn't already been created
 echo "\n==> Ensuring ssh key "$SSH_KEY_FILE" exists."
@@ -208,17 +270,6 @@ else
   echo "[i] Skipping..."
 fi
 
-# If ADT workflow, clone ADT workflow repositories
-if [ $WORKFLOW == "adt" ]; then
-  # Create ADT repos dir if it doesn't exist
-  ensure_dir_exists "$ADT_REPOS_DIR" "ADT repos"
-
-  # Clone ADT repos if they haven't been cloned already
-  echo "\n==> [adt workflow] Ensuring ADT repositories are cloned."
-  cd "$ADT_REPOS_DIR"
-  clone_repos_if_not_exists "${ADT_WORKFLOW_REPOS[@]}"
-fi
-
 # Ensure that Homebrew is installed
 echo "\n==> Ensuring Homebrew is installed."
 if command -v "brew" >/dev/null 2>&1; then
@@ -245,22 +296,39 @@ else
   fi
 fi
 
-# Install apps via Homebrew
-echo "\n==> Installing apps via Homebrew."
-install_homebrew_cask_package "visual-studio-code"
-install_homebrew_cask_package "insomnia"
-install_homebrew_cask_package "obs"
-install_homebrew_cask_package "hex-fiend"
-install_homebrew_cask_package "cyberduck"
-install_homebrew_cask_package "pgadmin4"
-install_homebrew_cask_package "google-chrome"
-install_homebrew_package "awscli"
-install_homebrew_package "sops"
+# Create top-level repos dir if it doesn't exist
+ensure_dir_exists "$REPOS_DIR" "Top-level repos"
 
-# Add aliases to .zprofile
-echo "\n==> Ensuring .zprofile has aliases."
-add_text_if_not_exists "$HOME/.zprofile" "$ALIASES" "$ADDED_BY_US_TOKEN"
+# Install general apps via Homebrew
+echo "\n==> Installing general apps via Homebrew."
+install_homebrew_cask_packages "${GENERAL_HOMEBREW_CASK_APPS[@]}"
+install_homebrew_non_cask_packages "${GENERAL_HOMEBREW_NON_CASK_APPS[@]}"
+
+# Add general aliases to .zprofile
+echo "\n==> Ensuring .zprofile has general aliases."
+add_text_if_not_exists "$HOME/.zprofile" "$GENERAL_ALIASES" "$ADDED_BY_US_TOKEN"
 echo "--> Sourcing .zprofile file."
 source "$HOME/.zprofile"
 
-echo "\n\n[i]   Done! Happy hacking :-)"
+# ==========================================================
+# == Workflow-specific operations                         ==
+# ==========================================================
+
+# -----------
+# -- ADT   --
+# -----------
+if [ $WORKFLOW == "adt" ]; then
+  # Create ADT repos dir if it doesn't exist
+  ensure_dir_exists "$ADT_REPOS_DIR" "ADT repos"
+
+  # Clone ADT repos if they haven't been cloned already
+  echo "\n==> [adt workflow] Ensuring ADT repositories are cloned."
+  cd "$ADT_REPOS_DIR"
+  clone_repos_if_not_exists "${ADT_WORKFLOW_REPOS[@]}"
+
+  # Install ADT apps
+  echo "\n==> [adt workflow] Ensuring ADT apps are installed."
+  install_homebrew_cask_packages "${ADT_WORKFLOW_HOMEBREW_CASK_APPS[@]}"
+fi
+
+echo "\n\n[i] Done! Happy hacking :-)"
