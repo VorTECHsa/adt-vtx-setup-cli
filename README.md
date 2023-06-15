@@ -2,7 +2,7 @@
 
 This is a tool that automates the setup of a typical engineer's MacOS machine at Vortexa.
 
-See the **What & Why** section at the bottom of this document for more information.
+See the **Why** section at the bottom of this document for more information.
 
 ## Usage
 
@@ -36,6 +36,8 @@ sh setup.sh --help
 ```
 
 ---
+
+## Why
 
 This is a work-in-progress proof-of-concept tool.
 
