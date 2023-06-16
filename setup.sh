@@ -310,6 +310,11 @@ add_text_if_not_exists "$HOME/.zprofile" "$GENERAL_ALIASES" "$ADDED_BY_US_TOKEN"
 echo "--> Sourcing .zprofile file."
 source "$HOME/.zprofile"
 
+# Set default browser
+# First try defaultbrowser Homebrew package method. If that fails, try `open` command method.
+echo "\n==> Setting Chrome to default browser."
+(echo "--> Installing defaultbrowser Homebrew package." && brew install defaultbrowser && echo "--> Changing default browser." && defaultbrowser chrome) || (echo "--> defaultbrowser tool method failed; trying open command method." && open -a "Google Chrome" --args --make-default-browser)
+
 # ==========================================================
 # == Workflow-specific operations                         ==
 # ==========================================================
