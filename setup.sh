@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-VERSION="1.0.0"
+VERSION="1.0.1"
 
 # ==========================================================
 # == Args & Constants                                     ==
@@ -192,10 +192,10 @@ clone_repo_if_not_exists() {
 
   echo "--> Checking if $repo repository dir already exists."
   if [ ! -d "$ADT_REPOS_DIR/$repo" ]; then
-    echo "[i] $repo repository dir does not exist; cloning."
+    echo "--> $repo repository dir does not exist; cloning."
     git clone $GITHUB_REPOS_SSH_PREFIX/$repo
   else
-    echo "--> $repo repository dir already exists; skipping."
+    echo "[i] $repo repository dir already exists; skipping."
   fi
 }
 
