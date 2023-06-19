@@ -35,9 +35,15 @@ To see usage:
 sh setup.sh --help
 ```
 
+### Testing
+
+The best way to test this tool is to use a virtualization technology such as [UTM](https://mac.getutm.app/) (`brew install --cask utm`) to run a fresh MacOS virtual machine. The `setup.sh` script can then be copied over to the virtual machine, and executed.
+
+If you use UTM, then you will need to create a mounted SMB volume called `share`, and then `sh ship-to-vm.sh` will automatically copy over `setup.sh` to the VM.
+
 ### Releasing
 
-* Bump `VERSION` on L.3 of `setup.sh` to the appropriate version for your change.
+Before releasing, bump `VERSION` on L.3 of `setup.sh` to the appropriate version for your change.
 
 ---
 
