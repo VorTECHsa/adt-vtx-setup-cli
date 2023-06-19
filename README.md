@@ -1,4 +1,4 @@
-# vtx-setup-cli
+# Vortexa Setup Utility
 
 This is a tool that automates the setup of a typical engineer's MacOS machine at Vortexa.
 
