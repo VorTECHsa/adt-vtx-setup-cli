@@ -35,6 +35,10 @@ To see usage:
 sh setup.sh --help
 ```
 
+### Releasing
+
+* Bump `VERSION` on L.3 of `setup.sh` to the appropriate version for your change.
+
 ---
 
 ## Why
