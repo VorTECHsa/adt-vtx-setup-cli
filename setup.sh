@@ -308,7 +308,8 @@ else
   echo "    This means a general-only setup will be performed."
   echo "    Run with '--help' for more information."
   echo
-  echo "    If this is okay, press 'Enter' to proceed. Else, any other character to abort."
+  echo "    If you meant to do this, press Enter to proceed."
+  echo "    Else, any other character to abort."
   echo "------------------------------------------------------------"
   read -n 1 input
   if [[ $input != "" ]]; then
@@ -365,13 +366,14 @@ echo "[i] Your $SSH_KEY_FILE.pub public SSH key has"
 echo "    been copied to your clipboard. If you have not already,"
 echo "    add it to your GitHub account at $GITHUB_ADD_SSH_KEY_URL."
 echo
-echo "    Press 'Enter' to open URL and proceed, or any other key to skip..."
+echo "    Press Enter to open URL and proceed."
+echo "    Else, any other key to skip this step."
 echo "------------------------------------------------------------"
 read -n 1 input
 
 if [[ $input == "" ]]; then
   open "$GITHUB_ADD_SSH_KEY_URL"
-  echo "[i] Once you have completed the above, press 'Enter' to continue..."
+  echo "[i] Once you have completed the above, press Enter to continue..."
   echo "------------------------------------------------------------"
   read
 else
@@ -389,14 +391,16 @@ if [ $? -eq 0 ]; then
   echo "[i] ~/.npmrc file does not contain content added by this tool."
   echo "------------------------------------------------------------"
   echo "[i] You need to create a new GitHub Personal Access Token (classic)."
-  echo "    You need to go to the URL: $GITHUB_CREATE_PAT_URL"
+  echo "    To do this, you need to go to:"
+  echo "      * Go to the URL (opened by pressing Enter now): $GITHUB_CREATE_PAT_URL"
   echo "      * Click the 'Generate new token' button"
   echo "      * Give a meaningful name, e.g. 'vortexa-npmrc'"
   echo "      * Set permissions for all repo and 'write:packages' and 'read:packages'"
   echo "      * Click the 'Generate token' button"
   echo "      * Copy the token to your clipboard to paste into here later."
   echo
-  echo "    Press 'Enter' to open this URL and proceed, or any other key to skip this step..."
+  echo "    Press Enter to open the aforementioned URL and proceed."
+  echo "    Else, any other key to skip this step."
   echo "------------------------------------------------------------"
 
   read -n 1 input
@@ -413,7 +417,8 @@ if [ $? -eq 0 ]; then
   echo "    If you have not got one already on-hand, ask your pod lead"
   echo "    or team for the key."
   echo
-  echo "    Press 'Enter' to provide this key, or any other key to skip this step..."
+  echo "    Press Enter to provide this key."
+  echo "    Else, any other key to skip this step."
   echo "------------------------------------------------------------"
 
   read -n 1 input
