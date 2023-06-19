@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-VERSION="1.0.1"
+VERSION="1.0.2"
 
 # ==========================================================
 # == Args & Constants                                     ==
@@ -23,6 +23,11 @@ GITHUB_REPOS_SSH_PREFIX="git@github.com:VorTECHsa"
 # such as .zprofile, such that we know if we should add content to them.
 # This keeps the script idempotent (re-runnable without bad affects).
 ADDED_BY_US_TOKEN="# -- Added by vcli"
+# URL to the repository of this tool
+REPO_URL="https://github.com/VorTECHsa/adt-vtx-setup-cli"
+# URLs to various GitHub pages used to enter in or generate keys and such
+GITHUB_ADD_SSH_KEY_URL="https://github.com/settings/ssh/new"
+GITHUB_CREATE_PAT_URL="https://github.com/settings/tokens"
 
 # ==========================================================
 # == General configuration (for all workflows)            ==
@@ -35,7 +40,6 @@ GENERAL_HOMEBREW_NON_CASK_APPS=("awscli" "sops" "aws-iam-authenticator" "kubectl
 # General helpful aliases
 GENERAL_ALIASES_ZSHRC="
 # Misc. Aliases
-alias c='clear'
 alias cls='clear'
 
 # Git Aliases
@@ -51,7 +55,7 @@ alias gp='git push'
 alias gl='git pull'
 "
 
-# Provided the `asp` command for all terminals.
+# Provides the `asp` command for all terminals.
 ASP_COMMAND_ZSHRC='
 # Lists available aws profiles from ~/.aws/config
 function aws_profiles() {
@@ -161,6 +165,24 @@ ensure_dir_exists() {
   fi
 }
 
+# Returns 1 if `file` exists and contains the given `token`.
+does_file_with_string_exist() {
+  local file="$1"
+  local token="$2"
+
+  echo "--> Checking if $file already exists"
+  if [ ! -e "$file" ]; then
+    return 0
+  fi
+
+  echo "--> $file exists; checking if it already contains token."
+  if ! grep -qF "$token" "$file"; then
+    return 0
+  else
+    return 1
+  fi
+}
+
 # Ensures that the given `file` exists and contains the given `text`, using the given `token` as a test.
 add_text_if_not_exists() {
   local file="$1"
@@ -261,10 +283,10 @@ install_homebrew_cask_packages() {
 supported_workflows_str=$(concatenate_strings "${SUPPORTED_WORKFLOWS[@]}")
 USAGE="Usage: sh setup.sh <workflow>
 
-<workflow>                Optional workflow to enable. Possible values: $supported_workflows_str
+  <workflow>                Optional workflow to enable. Possible values: $supported_workflows_str
 
-sh setup.sh --help        show this usage help text
-sh setup.sh --version     show version"
+  sh setup.sh --help        show this usage help text
+  sh setup.sh --version     show version"
 
 # Print version screen and exit if first param is "version"-like
 if [ "$1" == "--version" ] || [ "$1" == "-v" ] || [ "$1" == "version" ] || [ "$1" == "v" ]; then
@@ -282,6 +304,9 @@ echo
 # Print help screen and exit if first param is "help"-like
 if [ "$1" == "--help" ] || [ "$1" == "-h" ] || [ "$1" == "help" ] || [ "$1" == "h" ]; then
   echo "$USAGE"
+  echo
+  echo "Repository: $REPO_URL"
+  echo
   exit 0
 fi
 
@@ -336,16 +361,84 @@ add_text_if_not_exists "$SSH_DIR/config" "Host github.com\n  AddKeysToAgent yes\
 # Prompt user to add their ssh pub key to their GitHub account, if not already.
 cat "$SSH_KEY_FILE.pub" | pbcopy
 echo "------------------------------------------------------------"
-echo "[i] Your public ssh key has been copied to your clipboard.\n    If you have not already, please add it to your GitHub account at https://github.com/settings/ssh/new.\n    Press 'Enter' to open URL and proceed, or any other key to skip..."
+echo "[i] Your $SSH_KEY_FILE.pub public SSH key has"
+echo "    been copied to your clipboard. If you have not already,"
+echo "    please add it to your GitHub account at $GITHUB_ADD_SSH_KEY_URL."
+echo
+echo "    Press 'Enter' to open URL and proceed, or any other key to skip..."
 echo "------------------------------------------------------------"
 read -n 1 input
 
 if [[ $input == "" ]]; then
-  open https://github.com/settings/ssh/new
+  open "$GITHUB_ADD_SSH_KEY_URL"
   echo "[i] Once you have completed this, please press 'Enter' to continue..."
   read
 else
   echo "[i] Skipping..."
+fi
+
+# ==========================================================
+# == .npmrc file setup                                    ==
+# ==========================================================
+
+echo "\n==> Ensuring ~/.npmrc file is configured."
+
+does_file_with_string_exist "$HOME/.npmrc" "$ADDED_BY_US_TOKEN"
+if [ $? -eq 0 ]; then
+  echo "[i] ~/.npmrc file does not contain content added by this tool."
+  echo "------------------------------------------------------------"
+  echo "[i] You need to create a new GitHub Personal Access Token (classic)."
+  echo "    You need to go to the URL: $GITHUB_CREATE_PAT_URL"
+  echo "      * Click the 'Generate new token' button"
+  echo "      * Give a meaningful name, e.g. 'vortexa-npmrc'"
+  echo "      * Set permissions for all repo and 'write:packages' and 'read:packages'"
+  echo "      * Click the 'Generate token' button"
+  echo "      * Copy the token to your clipboard to paste into here later."
+  echo
+  echo "    Press 'Enter' to open this URL and proceed, or any other key to skip this step..."
+  echo "------------------------------------------------------------"
+
+  read -n 1 input
+  if [[ $input == "" ]]; then
+    open "$GITHUB_CREATE_PAT_URL"
+    echo "GitHub Personal Access Token (classic):" 
+    read -s GITHUB_PAT
+  else
+    echo "[i] Skipping..."
+  fi
+
+  echo "------------------------------------------------------------"
+  echo "[i] You need to get a Font Awesome NPM auth token."
+  echo "    If you have not got one already on-hand, ask your pod lead"
+  echo "    or team for the key."
+  echo
+  echo "    Press 'Enter' to provide this key, or any other key to skip this step..."
+  echo "------------------------------------------------------------"
+
+  read -n 1 input
+  if [[ $input == "" ]]; then
+    echo "Font Awesome NPM auth token:" 
+    read -s FONT_AWESOME_AUTH_TOKEN
+  else
+    echo "[i] Skipping..."
+  fi
+
+  if [[ -z "$GITHUB_PAT" && -z "$FONT_AWESOME_AUTH_TOKEN" ]]; then
+    echo "[!] Both npmrc steps skipped; not creating .npmrc file."
+  else
+    NPMRC_TEXT="
+@vortechsa:registry=https://npm.pkg.github.com/VorTECHsa
+//npm.pkg.github.com/:_authToken=$GITHUB_PAT
+
+@fortawesome:registry=https://npm.fontawesome.com/
+//npm.fontawesome.com/:_authToken=$FONT_AWESOME_AUTH_TOKEN
+user=0
+unsafe-perm=true"
+
+    add_text_if_not_exists "$HOME/.npmrc" "$NPMRC_TEXT" "$ADDED_BY_US_TOKEN"
+  fi
+else
+  echo "[i] ~/.npmrc file already contains content added by this tool; skipping."
 fi
 
 # ==========================================================
