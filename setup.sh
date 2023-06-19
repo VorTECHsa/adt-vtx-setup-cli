@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-VERSION="1.0.2"
+VERSION="1.0.3"
 
 # ==========================================================
 # == Args & Constants                                     ==
@@ -294,22 +294,6 @@ if [ "$1" == "--version" ] || [ "$1" == "-v" ] || [ "$1" == "version" ] || [ "$1
   exit 0
 fi
 
-# Print splash
-echo
-echo "----------------------------------------"
-echo "--        Vortexa Setup Utility       --"
-echo "----------------------------------------"
-echo
-
-# Print help screen and exit if first param is "help"-like
-if [ "$1" == "--help" ] || [ "$1" == "-h" ] || [ "$1" == "help" ] || [ "$1" == "h" ]; then
-  echo "$USAGE"
-  echo
-  echo "Repository: $REPO_URL"
-  echo
-  exit 0
-fi
-
 # If the workflow arg has been supplied, then check it's validity
 if [ ! -z "$1" ]; then
   check_value_in_list "$1" "${SUPPORTED_WORKFLOWS[@]}"
@@ -333,6 +317,22 @@ else
   else
     echo "[i] Proceeding."
   fi
+fi
+
+# Print splash (*after* version arg handling, arg validation, etc.)
+echo
+echo "----------------------------------------"
+echo "--        Vortexa Setup Utility       --"
+echo "----------------------------------------"
+echo
+
+# Print help screen and exit if first param is "help"-like
+if [ "$1" == "--help" ] || [ "$1" == "-h" ] || [ "$1" == "help" ] || [ "$1" == "h" ]; then
+  echo "$USAGE"
+  echo
+  echo "Repository: $REPO_URL"
+  echo
+  exit 0
 fi
 
 # ==========================================================
