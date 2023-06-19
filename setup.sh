@@ -363,7 +363,7 @@ cat "$SSH_KEY_FILE.pub" | pbcopy
 echo "------------------------------------------------------------"
 echo "[i] Your $SSH_KEY_FILE.pub public SSH key has"
 echo "    been copied to your clipboard. If you have not already,"
-echo "    please add it to your GitHub account at $GITHUB_ADD_SSH_KEY_URL."
+echo "    add it to your GitHub account at $GITHUB_ADD_SSH_KEY_URL."
 echo
 echo "    Press 'Enter' to open URL and proceed, or any other key to skip..."
 echo "------------------------------------------------------------"
@@ -371,7 +371,8 @@ read -n 1 input
 
 if [[ $input == "" ]]; then
   open "$GITHUB_ADD_SSH_KEY_URL"
-  echo "[i] Once you have completed this, please press 'Enter' to continue..."
+  echo "[i] Once you have completed the above, press 'Enter' to continue..."
+  echo "------------------------------------------------------------"
   read
 else
   echo "[i] Skipping..."
