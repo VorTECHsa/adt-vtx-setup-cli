@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-VERSION="1.0.3"
+VERSION="1.0.4"
 
 # ==========================================================
 # == Args & Constants                                     ==
@@ -276,6 +276,14 @@ install_homebrew_cask_packages() {
   done
 }
 
+print_splash() {
+  echo
+  echo "----------------------------------------"
+  echo "--        Vortexa Setup Utility       --"
+  echo "----------------------------------------"
+  echo
+}
+
 # ==========================================================
 # == CLI functionality (arg validation, help page, etc.)  ==
 # ==========================================================
@@ -291,6 +299,16 @@ USAGE="Usage: sh setup.sh <workflow>
 # Print version screen and exit if first param is "version"-like
 if [ "$1" == "--version" ] || [ "$1" == "-v" ] || [ "$1" == "version" ] || [ "$1" == "v" ]; then
   echo "$VERSION"
+  exit 0
+fi
+
+# Print help screen and exit if first param is "help"-like
+if [ "$1" == "--help" ] || [ "$1" == "-h" ] || [ "$1" == "help" ] || [ "$1" == "h" ]; then
+  print_splash
+  echo "$USAGE"
+  echo
+  echo "Repository: $REPO_URL"
+  echo
   exit 0
 fi
 
@@ -320,21 +338,7 @@ else
   fi
 fi
 
-# Print splash (*after* version arg handling, arg validation, etc.)
-echo
-echo "----------------------------------------"
-echo "--        Vortexa Setup Utility       --"
-echo "----------------------------------------"
-echo
-
-# Print help screen and exit if first param is "help"-like
-if [ "$1" == "--help" ] || [ "$1" == "-h" ] || [ "$1" == "help" ] || [ "$1" == "h" ]; then
-  echo "$USAGE"
-  echo
-  echo "Repository: $REPO_URL"
-  echo
-  exit 0
-fi
+print_splash
 
 # ==========================================================
 # == SSH key setup and GitHub SSH configuration           ==
