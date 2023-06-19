@@ -29,6 +29,8 @@ REPO_URL="https://github.com/VorTECHsa/adt-vtx-setup-cli"
 GITHUB_ADD_SSH_KEY_URL="https://github.com/settings/ssh/new"
 GITHUB_CREATE_PAT_URL="https://github.com/settings/tokens"
 
+OS_ARCH=$(uname -m)
+
 # ==========================================================
 # == General configuration (for all workflows)            ==
 # ==========================================================
@@ -485,10 +487,12 @@ fi
 # Ensure top-level repos dir exists
 ensure_dir_exists "$REPOS_DIR" "Top-level repos"
 
-echo "\n==> Ensuring Rosetta is installed. This may prompt you for your machine user's password."
-echo "------------------------------------------------------------"
-# Ensure rosetta is installed (currently required by aws-vpn-client app)
-sudo softwareupdate --install-rosetta
+if [ "$OS_ARCH" == "arm" ] || [ "$OS_ARCH" == "arm64" ]; then
+  echo "\n==> ARM OS detected (arch: $OS_ARCH); ensuring Rosetta is installed. This may prompt you for your machine user's password."
+  echo "------------------------------------------------------------"
+  # Ensure rosetta is installed (currently required by aws-vpn-client app)
+  sudo softwareupdate --install-rosetta
+fi
 
 # Ensure general apps are installed (via Homebrew)
 echo "\n==> Installing general apps via Homebrew."
