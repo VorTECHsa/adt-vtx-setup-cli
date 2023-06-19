@@ -115,7 +115,7 @@ ADT_REPOS_DIR="$REPOS_DIR/adt"
 # The repositories that are cloned
 ADT_WORKFLOW_REPOS=("web" "api" "app-core" "adt-publish-workers")
 # The apps that are installed (via Homebrew)
-ADT_WORKFLOW_HOMEBREW_CASK_APPS=("obs" "hex-fiend" "pgadmin4")
+ADT_WORKFLOW_HOMEBREW_CASK_APPS=("hex-fiend" "pgadmin4")
 
 # ==========================================================
 # == Functions                                            ==
