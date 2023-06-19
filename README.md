@@ -15,6 +15,8 @@ This does the following:
 * Clones common code repositories from our GitHub (depending on the selected `workflow`).
 * Installs common useful apps (e.g. Visual Studio Code, Insomnia, etc.).
 * Creates some useful bash aliases (e.g. `gco` for `git checkout`, etc.).
+* Guides user through `~/.npmrc` setup
+* Sets Chrome as default browser
 * More are planned.
 
 **Note:** The above is for the default (ADT) workflow. To see what other workflows are available, run `sh setup.sh --help`
