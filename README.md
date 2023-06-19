@@ -39,14 +39,18 @@ sh setup.sh --help
 
 ## Why
 
-This is a work-in-progress proof-of-concept tool.
+This is a work-in-progress tool.
 
-**Impetus:** At the moment, the setup process for dev machines at Vortexa mostly manual. New joiners must follow an assortment of Notion pages step-by-step. This has some cons:
+**Impetus**
+
+At the moment, the setup process for dev machines at Vortexa mostly manual. New joiners must follow an assortment of Notion pages step-by-step. This has some cons:
 * Slow
 * Error-prone
 * Often requires pod lead or team hand-holding at some point
 
-**Aims:** Demonstrate the viability and pros of a tool that automates the setup process for a typical dev machine at Vortexa. This includes (but not necessarily limited to):
+**Aims**
+
+Demonstrate the viability and pros of a tool that automates the setup process for a typical dev machine at Vortexa. This includes (but not necessarily limited to):
 * Installing required apps such as nvm, vscode, insomnia, sops, aws-vpn-client, etc.
 * Cloning core repositories most devs will need. For example, for an ADT new joiner, this could be `web`, `app-core`, `api`, `adt-publish-workers`, `adt-signals-api`, etc.
 * Configuring any apps with required config
