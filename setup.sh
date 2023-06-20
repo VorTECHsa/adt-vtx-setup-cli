@@ -532,7 +532,7 @@ echo "\n==> Setting Chrome to default browser."
 # -----------
 # -- ADT   --
 # -----------
-if [ $WORKFLOW == "adt" ]; then
+if [ "$WORKFLOW" == "adt" ]; then
   # Create ADT repos dir if it doesn't exist
   ensure_dir_exists "$ADT_REPOS_DIR" "ADT repos"
 
