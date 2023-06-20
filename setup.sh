@@ -94,13 +94,6 @@ function asp() {
 }
 '
 
-KUBE_TOKEN_GEN_ZSHRC='
-# Generate access token to your clipboard for authenticating into our Kubernetes dashboards
-function kubeToken() {
-  kubectl -n kube-system describe secret $(kubectl -n kube-system get secret | grep eks-admin | awk '\''{print $1}'\'')  | awk '\''$1=="token:"{print $2}'\'' | pbcopy
-}
-'
-
 # ==========================================================
 # == Workflow-specific configuration                      ==
 # ==========================================================
@@ -501,7 +494,7 @@ install_homebrew_non_cask_packages "${GENERAL_HOMEBREW_NON_CASK_APPS[@]}"
 
 # Ensure general aliases and other .zshrc content is added
 echo "\n==> Ensuring .zshrc has general aliases and asp command."
-add_text_if_not_exists "$HOME/.zshrc" "$GENERAL_ALIASES_ZSHRC\n\n$ASP_COMMAND_ZSHRC\n\n$KUBE_TOKEN_GEN_ZSHRC" "$ADDED_BY_US_TOKEN"
+add_text_if_not_exists "$HOME/.zshrc" "$GENERAL_ALIASES_ZSHRC\n\n$ASP_COMMAND_ZSHRC" "$ADDED_BY_US_TOKEN"
 echo "--> Sourcing .zshrc file."
 source "$HOME/.zshrc"
 
